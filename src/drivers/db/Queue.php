@@ -183,6 +183,18 @@ class Queue extends CliQueue
 
                 // Reserve one message
                 $payload = (new Query())
+                    ->select([
+                        'id',
+                        'channel',
+                        new Expression('convert_from(job::bytea, \'UTF8\') as job'),
+                        'pushed_at',
+                        'reserved_at',
+                        'done_at',
+                        'delay',
+                        'ttr',
+                        'attempt',
+                        'priority',
+                    ])
                     ->from($this->tableName)
                     ->andWhere(['channel' => $this->channel, 'reserved_at' => null])
                     ->andWhere('[[pushed_at]] <= :time - [[delay]]', [':time' => time()])
